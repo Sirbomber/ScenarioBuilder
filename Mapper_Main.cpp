@@ -5,7 +5,7 @@
 #include <OP2Helper.h>
 #include <HFL.h>
 #include <Patches.h>
-#include <DisasterCreator.h>
+#include <DisasterCreator\DisasterCreator.h>
 
 #include <OP2Types.h>
 #include <Outpost2App.h>
@@ -15,7 +15,6 @@
 HINSTANCE hInstDLL = NULL;
 
 #ifdef _SOLO
-//Export char MapName[] = "on1_01.map";
 Export char MapName[] = "tutorial.map";
 Export char LevelDesc[] = "Editor";
 Export char TechtreeName[] = "multitek.txt";
@@ -45,6 +44,7 @@ BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 	else if (fdwReason == DLL_PROCESS_DETACH)
 	{
 		SetMessageHook(false, NULL);
+		SetNukePatch(false);
 		SetMissionEndHook(false, NULL);
 
 		HFLCleanup();
@@ -78,7 +78,8 @@ Export int InitProc()
 		Player[i].SetFoodStored(666666);
 		Player[i].SetScientists(200);
 #ifdef _SOLO
-		Player[i].SetTechLevel(13);
+		Player[i].GoEden();
+		//Player[i].SetTechLevel(13);
 		
 #endif
 	}
@@ -92,21 +93,18 @@ Export int InitProc()
 			break;
 		}
 	}
-	
-	// Setup disasters
-	//DC.SetMapSize(256, 128);
+
+	// Set default values for Disaster Creator
 	DC.SetMinimumWait(3700);
 	DC.SetIgnoreChance(7);
-	DC.SetNumPlayers(6);
 	DC.SetDisasterTypeWeight(disNone, 100);
 	DC.SetDisasterPowerWeight(pwrLow, 40);
 	DC.SetDisasterPowerWeight(pwrMedium, 40);
 	DC.SetDisasterPowerWeight(pwrHigh, 16);
 	DC.SetDisasterPowerWeight(pwrApocalyptic, 4);
 	DC.SetDisasterTargetWeight(trgPlayer, 100);
-	DC.SetLavaTiles();
-	//DC.DefineVolcano(LOCATION(19 + 31, 23 - 1), 0, 5, volSouthWest, spdInstant);
-	//DC.SetCallbackTrigger("DisasterCreator_Callback", 200);
+
+	DC.SetCallbackTrigger("DisasterCreator_Callback", 200);
 
 	return 1; // return 1 if OK; 0 on failure
 }
